@@ -20,24 +20,49 @@
       <section id="monster" class="container">
         <h2>Monster Health</h2>
         <div class="healthbar">
-          <div class="healthbar__value"></div>
+          <div
+            class="healthbar__value"
+            :class=""
+            :style="monsterBarStyles"
+          ></div>
         </div>
       </section>
       <section id="player" class="container">
         <h2>Your Health</h2>
         <div class="healthbar">
-          <div class="healthbar__value"></div>
+          <div class="healthbar__value" :style="playerBarStyles"></div>
         </div>
       </section>
-      <section id="controls">
-        <button>ATTACK</button>
-        <button>SPECIAL ATTACK</button>
-        <button>HEAL</button>
-        <button>SURRENDER</button>
+      <section class="container" v-if="winner">
+        <h2>GAME OVER!!!</h2>
+        <h3 v-if="winner === 'monster'">You lost!</h3>
+        <h3 v-else-if="winner === 'player'">You won!</h3>
+        <h3 v-else="winner === 'draw'">It's a draw!</h3>
+        <button @click="startGame">Start new game</button>
+      </section>
+      <section id="controls" v-else>
+        <button @click="attackMonster">ATTACK</button>
+        <button :disabled="enableSpecialAttack" @click="speciallyAttackMonster">
+          SPECIAL ATTACK
+        </button>
+        <button :disabled="enableHealAttack" @click="healPlayer">HEAL</button>
+        <button @click="surrenderGame">SURRENDER</button>
       </section>
       <section id="log" class="container">
         <h2>Battle Log</h2>
-        <ul></ul>
+        <ul>
+          <li v-for="(item, index) in attackLog" :key="index">
+            <span :class="{'log--player': item.who === 'player', 'log--monster':item.who === 'monster'}">{{ item.who === 'player' ? 'Player ' : 'Monster ' }} </span>
+            <span v-if="item.what === 'heals'"
+              >heals himself for
+              <span class="log--heal">{{ item.value }}</span></span
+            >
+            <span v-else
+              > {{ item.what }} for
+              <span class="log--damage">{{ item.value }}</span></span
+            >
+          </li>
+        </ul>
       </section>
     </div>
   </body>
